@@ -14,7 +14,7 @@ export const PHASES = {
 
 const initialState = {
   phase: PHASES.LANDING,
-  selectedBank: 'standard', // 'standard' or 'advanced'
+  selectedBank: 'advanced', // 'standard' or 'advanced'
   allQuestions: [],   // Store all loaded questions
   questions: [],      // Store the subset of randomized questions
   questionCount: 40,  // Default count

@@ -48,3 +48,9 @@ The project is automatically pushed to GitHub pages through simplified deploymen
 ```bash
 npm run deploy
 ```
+
+---
+
+## ⚠️ Disclaimer
+
+**Please Note:** The questions, answers, and study guides included in the question banks for this project were extracted and generated using **Google Gemini**. While the core engine and design of this portal are highly structured, the data itself is AI-generated and **answers can sometimes be incorrectly labeled or reasoned**. Please actively review the answers provided and cross-reference them with official Snowflake Documentation if you are using this as a true study aid!

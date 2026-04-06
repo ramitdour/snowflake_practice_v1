@@ -5,7 +5,14 @@ const LandingScreen = () => {
     const { dispatch } = useExam();
     const [name, setName] = useState('');
     const [qCount, setQCount] = useState(40);
-    const [bank, setBank] = useState('standard');
+    const [bank, setBank] = useState('advanced');
+
+    // Make Enter key globally submit the form
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && name.trim()) {
+            handleStart(e);
+        }
+    };
 
     const handleStart = (e) => {
         e.preventDefault();
@@ -18,7 +25,10 @@ const LandingScreen = () => {
     };
 
     return (
-        <div className="h-full bg-neutral-bg flex items-center justify-center p-6 animate-in fade-in zoom-in duration-500">
+        <div 
+            className="h-full bg-neutral-bg flex items-center justify-center p-6 animate-in fade-in zoom-in duration-500 outline-none"
+            onKeyDown={handleKeyDown}
+        >
             <div className="bg-white p-12 rounded-xl shadow-2xl border border-pvue-primary/10 max-w-[550px] w-full text-center relative overflow-hidden group">
                 <div className="absolute top-0 left-0 w-full h-2 bg-pvue-primary transition-all group-hover:h-3"></div>
                 

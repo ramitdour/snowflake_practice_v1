@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useExam } from '../context/ExamContext'
 
 const QuestionArea = () => {
@@ -31,6 +32,30 @@ const QuestionArea = () => {
             payload: { questionId: currentQ.id, option: key, isMultiple }
         });
     };
+
+    // Keyboard bindings for 1-9 options and Enter navigation
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            // Only handle keyboard shortcuts if there is no open modal stealing focus
+            const isModalOpen = document.getElementById('abe-dialog') !== null;
+            if (isModalOpen) return;
+
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                dispatch({ type: 'NEXT_QUESTION' });
+            } else if (/^[1-9]$/.test(e.key)) {
+                const index = parseInt(e.key) - 1;
+                const keys = Object.keys(currentQ.options || {});
+                if (index >= 0 && index < keys.length) {
+                    e.preventDefault();
+                    handleOptionSelect(keys[index]);
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [currentQ, selected, dispatch]);
 
     return (
         <div className="flex-grow overflow-y-auto content-scrollbar p-6 flex flex-col items-center bg-white" id="abe-contentPane">
