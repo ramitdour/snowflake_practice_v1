@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useExam, PHASES } from '../context/ExamContext'
 
 const InstructionsScreen = () => {
-    const { state, dispatch } = useExam();
+    const { state, dispatch, skipToFallback } = useExam();
     const [timeLeft, setTimeLeft] = useState(60);
 
     const isLoading = state.allQuestions.length === 0;
@@ -90,9 +90,17 @@ const InstructionsScreen = () => {
                             {isLoading ? 'LOADING DATA ENGINE...' : 'START SESSION ➔'}
                         </button>
                         {isLoading && (
-                            <div className="text-[10pt] text-neutral-muted italic mt-4 flex items-center justify-center gap-2">
-                                <span className="animate-spin text-xl">⏳</span>
-                                <span>Fetching secure exam payload. Timeout in {Math.max(0, timeLeft)}s...</span>
+                            <div className="flex flex-col items-center gap-3 mt-4">
+                                <div className="text-[10pt] text-neutral-muted italic flex items-center justify-center gap-2">
+                                    <span className="animate-spin text-xl">⏳</span>
+                                    <span>Fetching secure exam payload. Timeout in {Math.max(0, timeLeft)}s...</span>
+                                </div>
+                                <button 
+                                    onClick={(e) => { e.preventDefault(); skipToFallback && skipToFallback(); }}
+                                    className="text-[9pt] font-bold text-pvue-primary hover:text-pvue-primary-dark underline underline-offset-4 decoration-pvue-primary/30 transition-all"
+                                >
+                                    Skip and use Standard Bank (Instant)
+                                </button>
                             </div>
                         )}
                     </div>

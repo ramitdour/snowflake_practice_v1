@@ -246,15 +246,27 @@ export function ExamProvider({ children }) {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [state.timerRunning]);
+  
+  const fetchFallback = useCallback(async () => {
+    try {
+        console.warn(`[ExamEngine] ⚠ TRIGGERING FAILSAFE FALLBACK. Pointing index to raw GitHub standard bank...`);
+        const fallbackUrl = 'https://raw.githubusercontent.com/ramitdour/snowflake_practice_v1/refs/heads/main/public/data/snowflake_all_questions_with_answers.json';
+        const fallbackResponse = await fetch(fallbackUrl);
+        const fallbackData = await fallbackResponse.json();
+        console.log(`[ExamEngine] ✓ SUCCESS: Fallback data safely materialized.`);
+        dispatch({ type: 'SET_ALL_QUESTIONS', payload: fallbackData });
+    } catch (err) {
+        console.error('[ExamEngine] Critical failure: Fallback also failed.', err);
+    }
+  }, []);
 
   // Load questions
   const loadQuestions = useCallback(async () => {
     try {
-      const baseUrl = import.meta.env.DEV ? '/' : '/snowflake_practice_v1/';
       const isAdvanced = state.selectedBank === 'advanced';
       const fileName = isAdvanced 
-        ? `${baseUrl}data/question_bank_with_markdown_data.json`
-        : `${baseUrl}data/snowflake_all_questions_with_answers.json`;
+        ? `${import.meta.env.BASE_URL}data/question_bank_with_markdown_data.json`
+        : `${import.meta.env.BASE_URL}data/snowflake_all_questions_with_answers.json`;
 
       if (isAdvanced) {
         console.log(`[ExamEngine] Initialization started. Attempting to fetch advanced question bank from: ${fileName}`);
@@ -277,14 +289,7 @@ export function ExamProvider({ children }) {
         clearTimeout(timeoutId);
         if (isAdvanced) {
            console.error(`[ExamEngine] ✕ CAUGHT TIMEOUT OR ERROR:`, fetchErr);
-           console.warn(`[ExamEngine] ⚠ TRIGGERING FAILSAFE FALLBACK. Pointing index to raw GitHub standard bank...`);
-           
-           const fallbackUrl = 'https://raw.githubusercontent.com/ramitdour/snowflake_practice_v1/refs/heads/main/public/data/snowflake_all_questions_with_answers.json';
-           const fallbackResponse = await fetch(fallbackUrl);
-           const fallbackData = await fallbackResponse.json();
-           
-           console.log(`[ExamEngine] ✓ SUCCESS: Fallback data safely materialized.`);
-           dispatch({ type: 'SET_ALL_QUESTIONS', payload: fallbackData });
+           await fetchFallback();
         } else {
            throw fetchErr;
         }
@@ -298,7 +303,7 @@ export function ExamProvider({ children }) {
     loadQuestions();
   }, [loadQuestions]);
 
-  const value = { state, dispatch };
+  const value = { state, dispatch, skipToFallback: fetchFallback };
 
   return (
     <ExamContext.Provider value={value}>
