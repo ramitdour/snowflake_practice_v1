@@ -247,9 +247,10 @@ export function ExamProvider({ children }) {
   // Load questions
   const loadQuestions = useCallback(async () => {
     try {
+      const baseUrl = import.meta.env.DEV ? '/' : '/snowflake_practice_v1/';
       const fileName = state.selectedBank === 'advanced' 
-        ? `/snowflake_practice_v1/data/question_bank_with_markdown_data.json`
-        : `/snowflake_practice_v1/data/snowflake_all_questions_with_answers.json`;
+        ? `${baseUrl}data/question_bank_with_markdown_data.json`
+        : `${baseUrl}data/snowflake_all_questions_with_answers.json`;
         
       const response = await fetch(fileName);
       const data = await response.json();
