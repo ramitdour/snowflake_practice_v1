@@ -1,0 +1,226 @@
+@import "tailwindcss";
+
+/* ============================================
+   SNOWFLAKE PRACTICE EXAM - DESIGN SYSTEM
+   Pearson VUE-style Interface
+   ============================================ */
+
+@theme {
+  /* Primary Colors - extracted from Pearson VUE CSS */
+  --color-pvue-primary: #11567F;
+  --color-pvue-primary-dark: #0d4263;
+  --color-pvue-primary-light: #1a6a9c;
+  --color-pvue-secondary: #006DAA;
+  --color-pvue-accent: #007394;
+  
+  /* Snowflake Brand */
+  --color-snow-blue: #29B5E8;
+  --color-snow-dark: #1a8bb5;
+  
+  /* Status Colors */
+  --color-status-error: #D90000;
+  --color-status-success: #2E7D32;
+  --color-status-warning: #FFFD6F;
+  --color-status-hover: #FFFF00;
+  
+  /* Neutral Colors */
+  --color-neutral-white: #FFFFFF;
+  --color-neutral-bg: #F4F4F4;
+  --color-neutral-border: #C0C0C0;
+  --color-neutral-text: #000000;
+  --color-neutral-muted: #666666;
+  --color-neutral-row-alt: #F4F4F4;
+  
+  /* Dialog Colors */
+  --color-dialog-bg: #11567F;
+  --color-dialog-text: #FFFFFF;
+  --color-dialog-btn-border: #FFFFFF;
+  
+  /* Typography */
+  --font-family-primary: 'Tahoma', 'Arial', 'Helvetica', sans-serif;
+  --font-family-content: 'Arial', sans-serif;
+  
+  /* Spacing */
+  --spacing-content: 18px;
+  
+  /* Heights - from Pearson VUE layout */
+  --height-titlebar: 50px;
+  --height-toolbar: 32px;
+  --height-navbar: 33px;
+}
+
+/* Base reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family-primary);
+  background-color: var(--color-neutral-bg);
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main Layout Fix - No absolute positions for primary bars */
+#abe-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Custom scrollbar for content pane */
+.content-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.content-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.content-scrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 6px;
+}
+
+.content-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Checkbox custom styles to match Pearson VUE */
+.pvue-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #666;
+  border-radius: 2px;
+  background: white;
+  cursor: pointer;
+  vertical-align: middle;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pvue-checkbox:checked {
+  background: #11567F;
+  border-color: #11567F;
+}
+
+.pvue-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: -2px;
+  left: 2px;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Radio button custom styles */
+.pvue-radio {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #666;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  vertical-align: middle;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pvue-radio:checked {
+  border-color: #11567F;
+}
+
+.pvue-radio:checked::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #11567F;
+}
+
+/* Flag icon animation */
+@keyframes flagPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.flag-animate {
+  animation: flagPulse 0.3s ease-in-out;
+}
+
+/* Code block styling */
+.code-block {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 11pt;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 12px 16px;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  overflow-x: auto;
+}
+
+/* Review screen row hover */
+.review-row:hover {
+  background-color: #FFFD6F !important;
+  cursor: pointer;
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Transitions */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Score report styles */
+.score-bar-container {
+  width: 100%;
+  height: 24px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.score-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease-in-out;
+}
+
+/* Print styles for score report */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
