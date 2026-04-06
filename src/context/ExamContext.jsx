@@ -68,7 +68,10 @@ function examReducer(state, action) {
       return { ...state, phase: action.payload };
 
     case 'SET_SELECTED_BANK':
-      return { ...state, selectedBank: action.payload, allQuestions: [] };
+      if (state.selectedBank !== action.payload) {
+          return { ...state, selectedBank: action.payload, allQuestions: [] };
+      }
+      return state;
 
     case 'START_EXAM': {
       // Randomly select N questions from allQuestions
