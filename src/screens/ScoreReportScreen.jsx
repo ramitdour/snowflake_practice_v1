@@ -65,11 +65,8 @@ const QuestionReviewItem = ({ q, idx, userAns, correctAns }) => {
 
     return (
         <div className={`p-5 md:p-8 rounded-2xl border-2 transition-all duration-300 shadow-sm ${mainBorder} ${mainBg}`}>
-            {/* Header row for expand/collapse */}
-            <div 
-                className="flex flex-wrap gap-4 justify-between items-center cursor-pointer select-none group"
-                onClick={() => setIsExpanded(!isExpanded)}
-            >
+            {/* Header row */}
+            <div className="flex flex-wrap gap-4 justify-between items-center select-none group">
                 <div className="flex items-center gap-4">
                     <span className={`text-sm font-black px-3 py-1.5 rounded-lg text-white shadow-sm ${badgeBg}`}>
                         Question {idx + 1}
@@ -80,15 +77,11 @@ const QuestionReviewItem = ({ q, idx, userAns, correctAns }) => {
                     <div className={`text-sm font-black uppercase tracking-widest ${statusText}`}>
                         {isCorrect ? 'Correct' : isUnanswered ? 'Unanswered' : 'Incorrect'}
                     </div>
-                    <div className={`w-8 h-8 flex-shrink-0 rounded-full flex items-center justify-center bg-white shadow-sm border ${mainBorder} group-hover:scale-105 transition-all text-neutral-500`}>
-                        <span className={`transform transition-transform duration-300 text-[10px] ${isExpanded ? 'rotate-180' : ''}`}>▼</span>
-                    </div>
                 </div>
             </div>
 
-            {/* Expandable Body */}
-            {isExpanded && (
-                <div className="mt-6 pt-6 border-t border-black/5 animate-in slide-in-from-top-4 fade-in duration-300">
+            {/* Always Visible Body */}
+            <div className="mt-6 pt-6 border-t border-black/5">
                     {/* Question Text */}
                     <div className="text-[13pt] text-neutral-800 font-semibold leading-relaxed mb-8 whitespace-pre-wrap">
                         {q.question}
@@ -152,15 +145,23 @@ const QuestionReviewItem = ({ q, idx, userAns, correctAns }) => {
                             })}
                         </div>
                     </div>
-
-                    {/* Explanation */}
+                    {/* Expandable Explanation Segment */}
                     {(q.study_guide || q.reason) && (
-                        <div className="bg-white p-8 rounded-2xl border border-pvue-primary/10 shadow-md relative overflow-hidden mt-8 group">
-                            <div className="absolute top-0 left-0 w-1.5 h-full bg-pvue-primary/80"></div>
-                            <div className="text-xs font-black text-pvue-primary uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-pvue-primary/10 pb-3">
-                                <span>💡</span> Explanation & Study Guide
-                            </div>
-                            <div className="text-[11pt] text-neutral-700 leading-relaxed prose prose-slate prose-headings:text-pvue-primary prose-a:text-blue-600 hover:prose-a:text-blue-500 max-w-none">
+                        <div className="mt-6">
+                            <button 
+                                onClick={() => setIsExpanded(!isExpanded)}
+                                className="w-full flex items-center justify-between bg-white px-6 py-4 rounded-xl border border-pvue-primary/20 shadow-sm hover:border-pvue-primary hover:shadow-md transition-all group"
+                            >
+                                <span className="text-xs font-black text-pvue-primary uppercase tracking-widest flex items-center gap-2">
+                                    <span>💡</span> View Detailed Explanation
+                                </span>
+                                <span className={`w-6 h-6 flex items-center justify-center rounded-full bg-neutral-100 text-neutral-500 transform transition-transform duration-300 text-[10px] ${isExpanded ? 'rotate-180' : ''}`}>▼</span>
+                            </button>
+                            
+                            {isExpanded && (
+                                <div className="bg-white p-8 rounded-b-2xl border border-t-0 border-pvue-primary/10 shadow-md relative overflow-hidden animate-in slide-in-from-top-4 fade-in duration-300">
+                                    <div className="absolute top-0 left-0 w-1.5 h-full bg-pvue-primary/80"></div>
+                                    <div className="text-[11pt] text-neutral-700 leading-relaxed prose prose-slate prose-headings:text-pvue-primary prose-a:text-blue-600 hover:prose-a:text-blue-500 max-w-none">
                                 {q.study_guide ? (
                                     <ReactMarkdown 
                                         remarkPlugins={[remarkGfm]}
@@ -228,11 +229,12 @@ const QuestionReviewItem = ({ q, idx, userAns, correctAns }) => {
                 </div>
             )}
         </div>
+    </div>
     );
 };
 
 const ScoreReportScreen = () => {
-    const { state } = useExam();
+    const { state, dispatch } = useExam();
     const { questions, answers, candidateName } = state;
 
     // Calculate performance by category

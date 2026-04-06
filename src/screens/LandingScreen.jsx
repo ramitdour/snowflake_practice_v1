@@ -10,8 +10,16 @@ const LandingScreen = () => {
 
     useEffect(() => {
         try {
-            const saved = localStorage.getItem('snowflake_exam_history');
-            if (saved) setHistory(JSON.parse(saved).reverse().slice(0, 5)); // Show last 5
+            const savedHistory = localStorage.getItem('snowflake_exam_history');
+            if (savedHistory) setHistory(JSON.parse(savedHistory).reverse().slice(0, 5)); // Show last 5
+            
+            const savedPrefs = localStorage.getItem('snowflake_exam_prefs');
+            if (savedPrefs) {
+                const prefs = JSON.parse(savedPrefs);
+                if (prefs.name) setName(prefs.name);
+                if (prefs.qCount) setQCount(prefs.qCount);
+                if (prefs.bank) setBank(prefs.bank);
+            }
         } catch (err) {}
     }, []);
 
@@ -25,8 +33,17 @@ const LandingScreen = () => {
     const handleStart = (e) => {
         e.preventDefault();
         if (name.trim()) {
-            dispatch({ type: 'SET_CANDIDATE_NAME', payload: name });
-            dispatch({ type: 'SET_QUESTION_COUNT', payload: parseInt(qCount) || 40 });
+            const parsedCount = parseInt(qCount) || 40;
+            try {
+                localStorage.setItem('snowflake_exam_prefs', JSON.stringify({ 
+                    name: name.trim(), 
+                    qCount: parsedCount, 
+                    bank 
+                }));
+            } catch (err) {}
+
+            dispatch({ type: 'SET_CANDIDATE_NAME', payload: name.trim() });
+            dispatch({ type: 'SET_QUESTION_COUNT', payload: parsedCount });
             dispatch({ type: 'SET_SELECTED_BANK', payload: bank });
             dispatch({ type: 'SET_PHASE', payload: PHASES.INSTRUCTIONS });
         }

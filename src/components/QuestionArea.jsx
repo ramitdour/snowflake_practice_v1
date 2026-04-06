@@ -37,15 +37,16 @@ const QuestionArea = () => {
     useEffect(() => {
         const handleKeyDown = (e) => {
             // Only handle keyboard shortcuts if there is no open modal stealing focus
-            const isModalOpen = document.getElementById('abe-dialog') !== null;
-            if (isModalOpen) return;
+            const isModalStealingFocus = state.showEndExamDialog || !!state.systemAlert || state.showNavigator;
+            if (isModalStealingFocus) return;
 
             if (e.key === 'Enter') {
                 e.preventDefault();
                 dispatch({ type: 'NEXT_QUESTION' });
             } else if (/^[1-9]$/.test(e.key)) {
                 const index = parseInt(e.key) - 1;
-                const keys = Object.keys(currentQ.options || {});
+                // Sort keys so "1" always maps to "A", "2" to "B", etc.
+                const keys = Object.keys(currentQ.options || {}).sort();
                 if (index >= 0 && index < keys.length) {
                     e.preventDefault();
                     handleOptionSelect(keys[index]);
