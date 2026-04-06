@@ -1,16 +1,50 @@
-# React + Vite
+# Snowflake Practice Exam Portal ❄️
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A dynamic, production-ready React application designed to simulate the Pearson VUE exam experience for Snowflake certification. This application serves as a robust study companion, featuring interactive question banks, categorical performance tracking, and rich markdown-based study guides.
 
-Currently, two official plugins are available:
+## Features ✨
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Professional UI/UX:** Modeled closely after the Pearson VUE testing environment but modernized with a clean web aesthetic using Tailwind CSS v4.
+- **Dynamic Question Banks:** Users can select between a Standard Exam or an Advanced study mode that features detailed markdown study guides.
+- **Rich Explanations:** Explanations support deep markdown elements including interactive Mermaid.js system architecture diagrams, IDE-themed SQL syntax highlighting, and well-structured formatting.
+- **Real-Time Analytics:** The application tracks your real-time performance to determine your categorical readiness against official Snowflake documentation benchmarks.
+- **Responsive Review Mode:** Interactive expand/collapse mechanisms allow you to dive deeply into incorrect choices using tailored instructional color coding (Emerald/Rose semantics).
 
-## React Compiler
+## Setup & Local Development 🛠️
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+To run the application locally on your machine:
 
-## Expanding the ESLint configuration
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/ramitdour/snowflake_practice_v1.git
+   cd snowflake_practice_v1
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Start the Vite development server:**
+   ```bash
+   npm run dev
+   ```
+
+## Tech Stack 🚀
+- **React.js** (Vite build system)
+- **Tailwind CSS v4** (Utility-first styling, customized theme)
+- **Context API** (Global state management for the active examination session)
+- **React Markdown & Remark GFM** (Rendering complex markdown guides)
+- **React Syntax Highlighter** (VS Code styling for SQL/Code snippets)
+- **Mermaid.js** (Dynamic charting and diagramming directly from data)
+
+## Extensibility 🗄️
+
+The question logic cleanly loads localized `.json` banks within `public/data/`. New question formats can be easily dragged into this specific folder and routed through the selection matrix in the Application Context.
+
+## Deployment 🌐
+
+The project is automatically pushed to GitHub pages through simplified deployment scripts.
+```bash
+npm run deploy
+```
