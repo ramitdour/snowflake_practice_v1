@@ -49,6 +49,14 @@ const LandingScreen = () => {
         }
     };
 
+    const handleHistoryClick = (record) => {
+        if (!record.questions || !record.answers) {
+            alert('This exam was taken before detailed logging was enabled so a full report cannot be restored.');
+            return;
+        }
+        dispatch({ type: 'LOAD_HISTORY_REPORT', payload: record });
+    };
+
     return (
         <div 
             className="h-full bg-neutral-bg flex flex-col items-center p-6 lg:p-12 overflow-y-auto content-scrollbar animate-in fade-in duration-500 outline-none"
@@ -145,24 +153,44 @@ const LandingScreen = () => {
                             const pct = ((record.score.correct / record.score.total) * 100).toFixed(0);
                             const isPass = pct >= 75;
                             const d = new Date(record.date);
+                            const hasFullDetails = !!record.questions && !!record.answers;
                             
                             return (
-                                <div key={i} className="bg-white p-5 rounded-xl border border-black/5 shadow-sm flex items-center justify-between group hover:shadow-md transition-all">
-                                    <div className="space-y-1 text-left">
-                                        <div className="text-[10px] font-black uppercase text-neutral-400 tracking-widest">
-                                            {d.toLocaleDateString()} at {d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                <button 
+                                    key={i} 
+                                    onClick={() => handleHistoryClick(record)}
+                                    disabled={!hasFullDetails}
+                                    className={`w-full text-left bg-white p-5 rounded-xl border border-black/5 flex items-center justify-between group transition-all relative overflow-hidden ${
+                                        hasFullDetails 
+                                        ? 'hover:shadow-md hover:border-pvue-primary/40 cursor-pointer active:scale-[0.98]' 
+                                        : 'opacity-75 cursor-not-allowed grayscale'
+                                    }`}
+                                >
+                                    {hasFullDetails && (
+                                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-pvue-primary/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                                    )}
+                                    
+                                    <div className="space-y-1 text-left relative z-10">
+                                        <div className="text-[10px] font-black uppercase text-neutral-400 tracking-widest flex items-center gap-2">
+                                            <span>{d.toLocaleDateString()} at {d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                                            {!hasFullDetails && <span className="bg-neutral-200 text-neutral-500 px-1.5 rounded text-[8px] tracking-widest">LEGACY</span>}
                                         </div>
-                                        <div className="text-sm font-bold text-neutral-800">
-                                            {record.candidateName} • <span className="text-neutral-500 font-medium capitalize">{record.bank} Bank</span>
+                                        <div className={`text-sm font-bold ${hasFullDetails ? 'text-neutral-800' : 'text-neutral-500'}`}>
+                                            {record.candidateName} • <span className={`${hasFullDetails ? 'text-neutral-500' : 'text-neutral-400'} font-medium capitalize`}>{record.bank} Bank</span>
                                         </div>
                                     </div>
-                                    <div className={`flex flex-col items-end`}>
+                                    <div className={`flex flex-col items-end relative z-10`}>
                                         <div className={`text-xl font-black ${isPass ? 'text-emerald-600' : 'text-rose-600'}`}>{pct}%</div>
                                         <div className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">
                                             {record.score.correct} / {record.score.total} Correct
                                         </div>
+                                        {hasFullDetails && (
+                                            <div className="text-[9px] font-black uppercase text-pvue-primary opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-5 whitespace-nowrap tracking-wider">
+                                                View Report ➔
+                                            </div>
+                                        )}
                                     </div>
-                                </div>
+                                </button>
                             );
                         })}
                     </div>

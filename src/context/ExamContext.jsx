@@ -182,8 +182,16 @@ function examReducer(state, action) {
           date: new Date().toISOString(),
           candidateName: state.candidateName,
           score: scoreObj,
-          bank: state.selectedBank
+          bank: state.selectedBank,
+          questions: questions,
+          answers: answers
         });
+        
+        // Keep only top 20 to prevent localStorage exhaustion
+        if (history.length > 20) {
+            history.splice(0, history.length - 20);
+        }
+        
         localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
       } catch (err) {
         console.error("Failed saving history", err);
@@ -199,6 +207,19 @@ function examReducer(state, action) {
 
     case 'VIEW_SCORE_REPORT':
       return { ...state, phase: PHASES.SCORE_REPORT };
+
+    case 'LOAD_HISTORY_REPORT': {
+      const record = action.payload;
+      return {
+        ...state,
+        phase: PHASES.SCORE_REPORT,
+        questions: record.questions || [],
+        answers: record.answers || {},
+        candidateName: record.candidateName,
+        score: record.score,
+        selectedBank: record.bank
+      };
+    }
 
     case 'RESTART_EXAM':
       return {
