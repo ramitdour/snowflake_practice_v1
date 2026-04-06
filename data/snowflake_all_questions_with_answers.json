@@ -1,0 +1,704 @@
+[
+    {
+        "id": "1",
+        "question": "Which privileges must be granted for a user to run queries on a virtual warehouse? (Select TWO).",
+        "options": {
+            "A": "USAGE on the warehouse",
+            "B": "MONITOR on the warehouse",
+            "C": "MODIFY on the warehouse",
+            "D": "OPERATE on the warehouse",
+            "E": "OWNERSHIP on the warehouse"
+        },
+        "reference": null,
+        "category": "Warehouses",
+        "correct_answers": [
+            "A",
+            "D"
+        ],
+        "reason": "To run a query, a user must have USAGE privileges on the warehouse to use its compute resources. Additionally, the OPERATE privilege is required if the user needs to manually start or stop the warehouse (e.g., if it is suspended and auto-resume is off).",
+        "example": "GRANT USAGE, OPERATE ON WAREHOUSE compute_wh TO ROLE analyst_role;"
+    },
+    {
+        "id": "2",
+        "question": "The role USERADMIN drops the role DBA.\n\nWho now owns the objects formerly owned by the DBA role?",
+        "options": {
+            "A": "The objects have no owner",
+            "B": "The role USERADMIN",
+            "C": "The role ACCOUNTADMIN",
+            "D": "The role SYSADMIN"
+        },
+        "reference": null,
+        "category": "Security",
+        "correct_answers": [
+            "B"
+        ],
+        "reason": "In Snowflake's Access Control, when a role is dropped, the ownership of all objects owned by that role is automatically transferred to the role that executed the DROP command.",
+        "example": "If USERADMIN executes 'DROP ROLE DBA;', then USERADMIN becomes the new OWNER of any tables or views previously owned by DBA."
+    },
+    {
+        "id": "3",
+        "question": "What is the impact of selecting one Snowflake edition over another? (Select TWO).",
+        "options": {
+            "A": "The edition will impact the unit costs for storage.",
+            "B": "The edition will impact which regions can be accessed by the accounts.",
+            "C": "The edition will determine the unit costs for the compute credits.",
+            "D": "The edition will impact the total allowed storage space.",
+            "E": "The edition will set a limit on the number of compute credits that can be consumed."
+        },
+        "reference": null,
+        "category": "Account Management",
+        "correct_answers": [
+            "A",
+            "C"
+        ],
+        "reason": "Snowflake editions (Standard, Enterprise, Business Critical) directly determine the cost per credit for compute and the unit cost for data storage (which can vary by region and edition based on features like Fail-safe or encryption requirements).",
+        "example": "Standard edition might cost $2.00 per credit, while Business Critical might cost $4.00 per credit for the same compute hour."
+    },
+    {
+        "id": "4",
+        "question": "What Snowflake best practice recommendation will help queries on external tables take advantage of virtual warehouse clustering MOST efficiently?",
+        "options": {
+            "A": "Combine data in external tables into one very large file.",
+            "B": "Avoid compressing the data that is stored in external tables.",
+            "C": "Disable caching on the virtual warehouse.",
+            "D": "Store data in external tables in multiple files that are reasonably sized."
+        },
+        "reference": null,
+        "category": "Performance",
+        "correct_answers": [
+            "D"
+        ],
+        "reason": "Snowflake performs best when data is distributed across multiple files of 'reasonable' size (typically 100-250 MB). This allows the virtual warehouse to use parallel processing (multiple nodes) to scan the data from external storage.",
+        "example": "Instead of one 10GB CSV file, store data in forty 250MB files to allow a 4-node warehouse to scan 10 files per node simultaneously."
+    },
+    {
+        "id": "5",
+        "question": "Which function can be used to convert semi-structured data into rows and columns?",
+        "options": {
+            "A": "TABLE",
+            "B": "FLATTEN",
+            "C": "PARSE_JSON",
+            "D": "JSON_EXTRACT_PATH_TEXT"
+        },
+        "reference": null,
+        "category": "Semi-structured Data",
+        "correct_answers": [
+            "B"
+        ],
+        "reason": "The FLATTEN function is a table-valued function that takes a VARIANT, OBJECT, or ARRAY column and explodes it into a set of rows, allowing you to turn semi-structured data into a relational format.",
+        "example": "SELECT value FROM table(FLATTEN(input => parse_json('[\"a\", \"b\"]'))); -- Returns two rows"
+    },
+    {
+        "id": "6",
+        "question": "What are type predicates used for?",
+        "options": {
+            "A": "Extracting data from a VARIANT column",
+            "B": "Casting a value in a VARIANT column to a particular data type",
+            "C": "Determining if a value in a VARIANT column is a particular data type",
+            "D": "Manipulating objects and arrays in a VARIANT column"
+        },
+        "reference": null,
+        "category": "Semi-structured Data",
+        "correct_answers": [
+            "C"
+        ],
+        "reason": "Type predicates are functions used to test the data type of a value stored in a VARIANT column. They return TRUE if the value matches the specified type.",
+        "example": "SELECT * FROM my_table WHERE IS_ARRAY(variant_col); -- Returns only rows where the column contains an array."
+    },
+    {
+        "id": "7",
+        "question": "What actions can be performed by a consumer account on a shared database? (Select TWO).",
+        "options": {
+            "A": "Cloning a shared table",
+            "B": "Modifying the data in a shared table",
+            "C": "Using Time Travel on a shared table",
+            "D": "Executing the SELECT statement on a shared table",
+            "E": "Joining the data from a shared table with another table"
+        },
+        "reference": null,
+        "category": "Data Sharing",
+        "correct_answers": [
+            "D",
+            "E"
+        ],
+        "reason": "Data sharing in Snowflake is read-only for consumers. Consumers can query the data using SELECT and join it with their own local tables. They cannot modify the original data or use Time Travel on the shared objects.",
+        "example": "SELECT * FROM shared_db.public.sales s JOIN local_db.public.regions r ON s.id = r.id;"
+    },
+    {
+        "id": "8",
+        "question": "What feature of Snowflake Continuous Data Protection can be used for maintenance of historical data?",
+        "options": {
+            "A": "Access control",
+            "B": "Fail-safe",
+            "C": "Network policies",
+            "D": "Time Travel"
+        },
+        "reference": null,
+        "category": "Data Protection",
+        "correct_answers": [
+            "D"
+        ],
+        "reason": "Time Travel allows you to access data as it existed at any point in the past (up to 90 days for Enterprise). It is used to restore deleted data, clone past states, or back up historical data before maintenance.",
+        "example": "SELECT * FROM my_table AT(OFFSET => -3600); -- Query data as it looked 1 hour ago."
+    },
+    {
+        "id": "9",
+        "question": "What will happen if a standard virtual warehouse is configured using the economy scaling policy?",
+        "options": {
+            "A": "The warehouse will wait to execute queries, starting only when enough users are connected.",
+            "B": "The warehouse will add another cluster only when the first cluster has reached maximum capacity.",
+            "C": "The warehouse will consume minimal credits as it is shared among many other users.",
+            "D": "The warehouse will automatically be converted to a Snowpark-optimized virtual warehouse."
+        },
+        "reference": null,
+        "category": "Warehouses",
+        "correct_answers": [
+            "B"
+        ],
+        "reason": "The 'Economy' scaling policy for multi-cluster warehouses prioritizes cost savings. It only starts an additional cluster if the system estimates there is enough load to keep the new cluster busy for at least 6 minutes.",
+        "example": "If Cluster 1 is at 90% load, Economy might wait to see if the load sustains before spinning up Cluster 2, unlike the 'Standard' policy which starts it immediately."
+    },
+    {
+        "id": "10",
+        "question": "What is the relationship between a Query Profile and a virtual warehouse?",
+        "options": {
+            "A": "A Query Profile can help users right-size virtual warehouses.",
+            "B": "A Query Profile defines the hardware specifications of the virtual warehouse.",
+            "C": "A Query Profile can help determine the number of virtual warehouses available.",
+            "D": "A Query Profile automatically scales the virtual warehouse based on the query complexity."
+        },
+        "reference": null,
+        "category": "Warehouses",
+        "correct_answers": [
+            "A"
+        ],
+        "reason": "The Query Profile is a visual tool that shows execution details. It helps users determine if a warehouse is sized correctly by showing metrics like 'Local Disk Spilling' (indicating the warehouse is too small for the memory required).",
+        "example": "If the Query Profile shows significant 'Remote Disk Spilling', the user should consider scaling up the warehouse from Small to Medium."
+    },
+    {
+        "id": "11",
+        "question": "What happens when a table with a column referencing a sequence is cloned to another database or schema?",
+        "options": {
+            "A": "A new sequence with the same name has to be created.",
+            "B": "The table references the original sequence.",
+            "C": "The sequence is automatically cloned.",
+            "D": "The sequence has to be cloned before the table can be cloned."
+        },
+        "reference": null,
+        "category": "Data Management",
+        "correct_answers": [
+            "B"
+        ],
+        "reason": "When a table is cloned, any column that uses a sequence for its default value will continue to point to the source sequence. This ensures the sequence remains unique globally, though it may cause unexpected gaps if both tables are active.",
+        "example": "Cloning 'Table_A' (using Seq_1) to 'Table_B' results in Table_B also pulling the nextval from Seq_1."
+    },
+    {
+        "id": "12",
+        "question": "An external stage, my_stage contains many directories, including one, app_files that contains CSV files.\n\nHow can all the CSV files from this directory be moved into table my_table without scanning files that are not needed?",
+        "options": {
+            "A": "COPY INTO my_table FROM @my_stage PATTERN='.*[.]csv';",
+            "B": "COPY INTO my_table FROM @my_stage/app_files PATTERN='.*[.]csv';",
+            "C": "COPY INTO my_table FROM @my_stage/app_files PATTERN='.*[.]txt';",
+            "D": "COPY INTO my_table FROM @my_stage PATTERN='.*[.]txt';"
+        },
+        "reference": null,
+        "category": "Data Loading",
+        "correct_answers": [
+            "B"
+        ],
+        "reason": "To load efficiently, you should specify the exact sub-path in the FROM clause to avoid scanning the entire stage. Then, use a PATTERN regex to filter for specific file extensions.",
+        "example": "COPY INTO my_table FROM @my_stage/app_files PATTERN='.*[.]csv';"
+    },
+    {
+        "id": "13",
+        "question": "Which use case is an example of an exploding join?",
+        "options": {
+            "A": "When a table is joined with itself and starts spilling",
+            "B": "When multiple tables are joined but records do not match",
+            "C": "When a table with a common table expression (CTE) is joined",
+            "D": "When multiple tables are joined without providing a join condition"
+        },
+        "reference": null,
+        "category": "Query Performance",
+        "correct_answers": [
+            "D"
+        ],
+        "reason": "An exploding join occurs when the number of rows in the output is significantly higher than the input, usually due to a Cartesian product (joining without a condition) or a many-to-many join on non-unique keys.",
+        "example": "SELECT * FROM TableA, TableB; -- If both have 1000 rows, this produces 1,000,000 rows."
+    },
+    {
+        "id": "14",
+        "question": "From which locations can data files be downloaded using the GET command? (Select TWO).",
+        "options": {
+            "A": "External stage",
+            "B": "Table stage",
+            "C": "User stage",
+            "D": "Directory table",
+            "E": "Permanent table"
+        },
+        "reference": null,
+        "category": "Data Loading",
+        "correct_answers": [
+            "B",
+            "C"
+        ],
+        "reason": "The GET command is used to download files from Snowflake internal stages (User, Table, or Named) to a local machine. External stages are managed via cloud provider tools (like AWS CLI or Azure Storage Explorer).",
+        "example": "GET @%my_table file:///tmp/data/;"
+    },
+    {
+        "id": "15",
+        "question": "What authentication method does the Kafka connector use within Snowflake?",
+        "options": {
+            "A": "Key-pair authentication",
+            "B": "Multi-Factor Authentication (MFA)",
+            "C": "OAuth",
+            "D": "Username and password"
+        },
+        "reference": null,
+        "category": "Security",
+        "correct_answers": [
+            "A"
+        ],
+        "reason": "Snowflake's Kafka connector requires Key-pair authentication (RSA Private/Public keys) to establish a secure connection between the Kafka cluster and the Snowflake account.",
+        "example": "You generate a 2048-bit RSA key pair and assign the public key to the Snowflake user used by Kafka."
+    },
+    {
+        "id": "16",
+        "question": "A Snowflake account administrator has set the resource monitors as shown in the diagram, with actions defined for each resource monitor as \"Notify & Suspend Immediately\".\n\nWhat is the MAXIMUM limit of credits that Warehouse 2 can consume?",
+        "options": {
+            "A": "0",
+            "B": "1500",
+            "C": "3500",
+            "D": "5000"
+        },
+        "reference": null,
+        "category": "Account Management",
+        "correct_answers": [
+            "C"
+        ],
+        "reason": "When multiple resource monitors are in play, the most restrictive (lowest) limit applies. If a warehouse-level monitor is set to 3500 and an account-level one to 5000, the warehouse will be suspended at 3500.",
+        "example": "Warehouse 2 reaches 3500 credits -> Warehouse-level monitor triggers 'Suspend Immediately' -> Warehouse 2 stops."
+    },
+    {
+        "id": "17",
+        "question": "How does query pruning optimize Snowflake query performance?",
+        "options": {
+            "A": "By terminating the query execution once a timeout occurs",
+            "B": "By avoiding query execution by pulling results from the result cache",
+            "C": "By removing unnecessary query clauses during query optimization",
+            "D": "By preventing unnecessary scanning of micro-partitions when running the query"
+        },
+        "reference": null,
+        "category": "Performance",
+        "correct_answers": [
+            "D"
+        ],
+        "reason": "Query pruning uses metadata (min/max values) for micro-partitions to skip reading files that cannot possibly contain the requested data based on the WHERE clause filters.",
+        "example": "If a query filters for 'Date = 2024-01-01', Snowflake prunes (ignores) all micro-partitions where the max date is 2023-12-31."
+    },
+    {
+        "id": "18",
+        "question": "Which Snowflake edition enables data sharing only through Snowflake Support?",
+        "options": {
+            "A": "Standard",
+            "B": "Enterprise",
+            "C": "Business Critical",
+            "D": "Virtual Private Snowflake (VPS)"
+        },
+        "reference": null,
+        "category": "Editions",
+        "correct_answers": [
+            "D"
+        ],
+        "reason": "Virtual Private Snowflake (VPS) is the most isolated and secure edition. Because it resides in its own managed environment, data sharing with accounts outside the VPS requires manual coordination via Snowflake Support.",
+        "example": "Standard and Enterprise users can use the Data Marketplace directly; VPS users cannot."
+    },
+    {
+        "id": "19",
+        "question": "Which Snowflake feature allows administrators to identify unused data that may be archived or deleted?",
+        "options": {
+            "A": "Access history",
+            "B": "Data classification",
+            "C": "Dynamic Data Masking",
+            "D": "Object tagging"
+        },
+        "reference": null,
+        "category": "Governance",
+        "correct_answers": [
+            "A"
+        ],
+        "reason": "The ACCESS_HISTORY view (available in Snowflake Information Schema/Account Usage) tracks which objects have been read or written to, allowing admins to see which tables haven't been accessed in months.",
+        "example": "SELECT table_name FROM access_history WHERE last_access_time < DATEADD(month, -6, CURRENT_DATE());"
+    },
+    {
+        "id": "20",
+        "question": "How do secure views compare to non-secure views in Snowflake?",
+        "options": {
+            "A": "Secure views execute slowly compared to non-secure views.",
+            "B": "Non-secure views are preferred over secure views when sharing data.",
+            "C": "Secure views are similar to materialized views in that they are the most performant.",
+            "D": "There are no performance differences between secure and non-secure views."
+        },
+        "reference": null,
+        "category": "Security",
+        "correct_answers": [
+            "A"
+        ],
+        "reason": "Secure views prevent users from seeing the underlying SQL or metadata that might leak data through error messages. To ensure this security, the query optimizer skips certain optimizations, which can lead to slower execution compared to non-secure views.",
+        "example": "A secure view prevents 'Trial and Error' attacks where a user deduces data by causing specific errors in the WHERE clause."
+    },
+    {
+        "id": "21",
+        "question": "What is the MINIMUM Snowflake edition that supports database replication?",
+        "options": {
+            "A": "Standard",
+            "B": "Enterprise",
+            "C": "Business Critical",
+            "D": "Virtual Private Snowflake (VPS)"
+        },
+        "reference": null,
+        "category": "Data Sharing",
+        "correct_answers": [
+            "B"
+        ],
+        "reason": "While basic data sharing is available in Standard, advanced Disaster Recovery features like Database Replication and Failover require the Enterprise edition or higher.",
+        "example": "To replicate a database from AWS US-West to Azure West-Europe, your account must be at least Enterprise edition."
+    },
+    {
+        "id": "22",
+        "question": "What parameter or option can be used in the COPY INTO <table> command to delete files from a stage after the files have been successfully loaded?",
+        "options": {
+            "A": "FORCE",
+            "B": "FILES",
+            "C": "PURGE",
+            "D": "OVERWRITE"
+        },
+        "reference": null,
+        "category": "Data Loading",
+        "correct_answers": [
+            "C"
+        ],
+        "reason": "The PURGE copy option, when set to TRUE, automatically removes the data files from the stage after the COPY INTO command successfully loads the data into the table.",
+        "example": "COPY INTO my_table FROM @my_stage PURGE = TRUE;"
+    },
+    {
+        "id": "23",
+        "question": "How can a 5 GB table be downloaded into a single file MOST efficiently?",
+        "options": {
+            "A": "Keep the default MAX_FILE_SIZE to 16 MB.",
+            "B": "Set the default MAX_FILE_SIZE to 5 GB.",
+            "C": "Set the SINGLE parameter to TRUE.",
+            "D": "Use a regular expression in the stage specifications of the COPY command."
+        },
+        "reference": null,
+        "category": "Data Unloading",
+        "correct_answers": [
+            "C"
+        ],
+        "reason": "By default, Snowflake unloads data into multiple files for parallelism. To force the output into one single file, the SINGLE = TRUE parameter must be used in the COPY INTO <location> command.",
+        "example": "COPY INTO @my_stage/result FROM my_table SINGLE = TRUE;"
+    },
+    {
+        "id": "24",
+        "question": "A user creates a stage using the following command:\n\nCREATE STAGE mystage\nDIRECTORY = (ENABLE = TRUE)\nFILE_FORMAT = myformat;\n\nWhat will be the outcome?",
+        "options": {
+            "A": "A stage with a directory table set to automatically refresh will be created.",
+            "B": "A stage with a directory table that has metadata that must be manually refreshed will be created.",
+            "C": "An error will be received stating that the storage location for the stage must be identified when creating a stage with a directory table.",
+            "D": "The command will fail to run because the name of the directory table is not specified."
+        },
+        "reference": null,
+        "category": "Storage",
+        "correct_answers": [
+            "B"
+        ],
+        "reason": "When creating an internal stage with a directory enabled, Snowflake creates metadata to track files. However, for internal stages, this metadata is not automatically synchronized; the user must manually refresh it using ALTER STAGE.",
+        "example": "ALTER STAGE mystage REFRESH; -- Required to see newly uploaded files in the directory table."
+    },
+    {
+        "id": "25",
+        "question": "Which Snowflake objects can execute both DDL and DML statements?",
+        "options": {
+            "A": "External functions",
+            "B": "Stored procedures",
+            "C": "User-Defined Functions (UDFs)",
+            "D": "User-Defined Table Functions (UDTFs)"
+        },
+        "reference": null,
+        "category": "Programmability",
+        "correct_answers": [
+            "B"
+        ],
+        "reason": "Stored Procedures can perform administrative tasks, including Data Definition Language (DDL) like CREATE/DROP and Data Manipulation Language (DML) like INSERT/UPDATE. UDFs are restricted to read-only operations.",
+        "example": "A stored procedure can check a condition and then 'CREATE TABLE new_table...';"
+    },
+    {
+        "id": "26",
+        "question": "From what stage can a Snowflake user omit the FROM clause while loading data into a table?",
+        "options": {
+            "A": "The user stage",
+            "B": "The table stage",
+            "C": "The internal named stage",
+            "D": "The external named stage"
+        },
+        "reference": null,
+        "category": "Data Loading",
+        "correct_answers": [
+            "B"
+        ],
+        "reason": "A table stage is implicitly linked to a specific table. When running a COPY INTO command for that table, if the files are in its table stage, you don't need to specify the source path.",
+        "example": "COPY INTO my_table; -- Automatically looks at @%my_table"
+    },
+    {
+        "id": "27",
+        "question": "Use of which file function allows a user to share unstructured data from an internal stage with an external reporting tool that does not have access to Snowflake?",
+        "options": {
+            "A": "BUILD_SCOPED_FILE_URL",
+            "B": "GET_PRESIGNED_URL",
+            "C": "BUILD_STAGE_FILE_URL",
+            "D": "GET_STAGE_LOCATION"
+        },
+        "reference": null,
+        "category": "Storage",
+        "correct_answers": [
+            "B"
+        ],
+        "reason": "GET_PRESIGNED_URL generates a temporary, secure URL that allows anyone with the link to download a file from a stage via a web browser or external tool without needing a Snowflake login.",
+        "example": "SELECT GET_PRESIGNED_URL(@my_stage, 'image.png', 3600); -- URL valid for 1 hour."
+    },
+    {
+        "id": "28",
+        "question": "What is recommended for workloads that have large memory requirements, such as an ML training use case that uses a stored procedure running on a single virtual warehouse node?",
+        "options": {
+            "A": "Use of the Economy policy on a multi-cluster virtual warehouse.",
+            "B": "Use of the Standard policy on a multi-cluster virtual warehouse.",
+            "C": "Use of a Snowpark-optimized virtual warehouse.",
+            "D": "Use of a Standard Snowflake virtual warehouse."
+        },
+        "reference": null,
+        "category": "Warehouses",
+        "correct_answers": [
+            "C"
+        ],
+        "reason": "Snowpark-optimized warehouses provide 16x more RAM per node compared to standard warehouses, which is essential for memory-intensive tasks like training Machine Learning models or processing large dataframes.",
+        "example": "Use a Snowpark-optimized Medium warehouse instead of a Standard Large to get more memory without doubling the credit cost."
+    },
+    {
+        "id": "29",
+        "question": "Who can activate and enforce a network policy for all users in a Snowflake account? (Select TWO).",
+        "options": {
+            "A": "A user with an USERADMIN or higher role",
+            "B": "A user with a SECURITYADMIN or higher role",
+            "C": "A role that has been granted the ATTACH POLICY privilege",
+            "D": "A role that has the NETWORK_POLICY account parameter set",
+            "E": "A role that has the OWNERSHIP of the network policy"
+        },
+        "reference": null,
+        "category": "Security",
+        "correct_answers": [
+            "B",
+            "E"
+        ],
+        "reason": "To enforce a policy account-wide, a role needs the authority to set account parameters (usually SECURITYADMIN or ACCOUNTADMIN). Additionally, the role that OWNS the policy has the right to modify or apply it.",
+        "example": "ALTER ACCOUNT SET NETWORK_POLICY = my_global_policy; -- Executed by SECURITYADMIN."
+    },
+    {
+        "id": "30",
+        "question": "What strategies can be used to optimize the performance of a virtual warehouse? (Select TWO).",
+        "options": {
+            "A": "Reduce queuing.",
+            "B": "Allow memory spillage.",
+            "C": "Increase the MAX_CONCURRENCY_LEVEL parameter.",
+            "D": "Increase the warehouse size.",
+            "E": "Suspend the warehouse frequently."
+        },
+        "reference": null,
+        "category": "Warehouses",
+        "correct_answers": [
+            "A",
+            "D"
+        ],
+        "reason": "To optimize performance, you can 'Scale Up' (increase warehouse size) to give a single query more power, or 'Scale Out' (multi-cluster) to reduce queuing when many users are running queries at once.",
+        "example": "Resizing from Small to Large reduces the time for a complex join from 10 minutes to 2 minutes."
+    },
+    {
+        "id": "31",
+        "question": "By default, the COPY INTO <location> statement will separate table data into a set of output files to take advantage of which Snowflake feature?",
+        "options": {
+            "A": "Query acceleration",
+            "B": "Query plan caching",
+            "C": "Parallel processing",
+            "D": "Time Travel"
+        },
+        "reference": null,
+        "category": "Data Loading",
+        "correct_answers": [
+            "C"
+        ],
+        "reason": "Snowflake is designed for massively parallel processing (MPP). By splitting data into multiple files, it allows different compute nodes in the warehouse to process chunks of data simultaneously.",
+        "example": "A 4-node warehouse can process 4 files at once, finishing the load 4x faster than a single file."
+    },
+    {
+        "id": "32",
+        "question": "Secured Data Sharing is allowed for which Snowflake database objects? (Select TWO).",
+        "options": {
+            "A": "Tables",
+            "B": "User-Defined Table Functions (UDTFs)",
+            "C": "Secure views",
+            "D": "Stored procedures",
+            "E": "Worksheets"
+        },
+        "reference": null,
+        "category": "Data Sharing",
+        "correct_answers": [
+            "A",
+            "C"
+        ],
+        "reason": "Snowflake allows sharing of Tables and Secure Views (including Secure Materialized Views). Regular views are not shareable because they could leak metadata.",
+        "example": "A provider shares a 'Secure View' to hide the logic used to filter data for a specific client."
+    },
+    {
+        "id": "33",
+        "question": "Based on a review of a Query Profile, which scenarios will benefit the MOST from the use of a data clustering key? (Select TWO.)",
+        "options": {
+            "A": "A column that appears most frequently in ORDER BY operations",
+            "B": "A column that appears most frequently in WHERE operations",
+            "C": "A column that appears most frequently in GROUP BY operations",
+            "D": "A column that appears most frequently in AGGREGATE operations",
+            "E": "A column that appears most frequently in JOIN operations"
+        },
+        "reference": null,
+        "category": "Performance",
+        "correct_answers": [
+            "B",
+            "E"
+        ],
+        "reason": "Clustering keys are most effective on columns used for filtering (WHERE) or joining (JOIN), as these operations rely on Snowflake's ability to skip (prune) irrelevant data based on column values.",
+        "example": "Clustering a sales table by 'region_id' makes 'WHERE region_id = 5' much faster."
+    },
+    {
+        "id": "34",
+        "question": "What does SnowCD help Snowflake users to do?",
+        "options": {
+            "A": "Copy data into files.",
+            "B": "Manage different databases and schemas.",
+            "C": "Troubleshoot network connections to Snowflake.",
+            "D": "Write SELECT queries to retrieve data from external tables."
+        },
+        "reference": null,
+        "category": "Connectivity",
+        "correct_answers": [
+            "C"
+        ],
+        "reason": "SnowCD (Snowflake Connectivity Diagnostic) is a client-side tool used to test and troubleshoot network connectivity between your local environment and the Snowflake service (e.g., checking firewall ports).",
+        "example": "Running 'snowcd config.json' to ensure your proxy allows traffic to the Snowflake internal stages."
+    },
+    {
+        "id": "35",
+        "question": "What transformations are supported when loading data into a table using the COPY INTO <table> command? (Select TWO).",
+        "options": {
+            "A": "Column reordering",
+            "B": "Column omission",
+            "C": "JOIN function",
+            "D": "FLATTEN function",
+            "E": "GROUP BY function"
+        },
+        "reference": null,
+        "category": "Data Loading",
+        "correct_answers": [
+            "A",
+            "B"
+        ],
+        "reason": "The COPY INTO command supports basic transformations using a SELECT statement, such as reordering columns, omitting columns, or basic type casting. It does not support complex operations like JOIN or GROUP BY during the load.",
+        "example": "COPY INTO my_table FROM (SELECT $2, $1 FROM @my_stage);"
+    },
+    {
+        "id": "36",
+        "question": "When using an enforcement model with primary and secondary roles for an active user session, what rules apply to the roles?",
+        "options": {
+            "A": "There can be only one active primary role with multiple secondary roles.",
+            "B": "There can be only one active primary role and one secondary role.",
+            "C": "There can be multiple active primary roles and only one secondary role.",
+            "D": "There can be an unlimited number of active primary roles and secondary roles."
+        },
+        "reference": null,
+        "category": "Security",
+        "correct_answers": [
+            "A"
+        ],
+        "reason": "In a Snowflake session, there is always exactly one 'Primary' role (active context). However, 'Secondary' roles can be enabled (using ALL), allowing the user to perform actions using permissions from any role they have been granted without switching.",
+        "example": "USE SECONDARY ROLES ALL; -- Access objects from both ANALYST and DEVELOPER roles simultaneously."
+    },
+    {
+        "id": "37",
+        "question": "What happens to a user if their IP address is included in both an allowed list and a blocked list within a network policy?",
+        "options": {
+            "A": "This IP address will be allowed to access Snowflake.",
+            "B": "This IP address will be blocked from accessing Snowflake.",
+            "C": "An error will result when defining the network policy.",
+            "D": "An error will result when activating the network policy."
+        },
+        "reference": null,
+        "category": "Security",
+        "correct_answers": [
+            "B"
+        ],
+        "reason": "In Snowflake network policies, the Blocked list always takes precedence over the Allowed list. If an IP appears in both, it is denied access.",
+        "example": "Allowed: 1.1.1.0/24, Blocked: 1.1.1.5 -> The user at 1.1.1.5 is blocked."
+    },
+    {
+        "id": "38",
+        "question": "Which Snowflake objects are limited to a Time Travel retention period of one day or less? (Select TWO).",
+        "options": {
+            "A": "Permanent tables",
+            "B": "Transient tables",
+            "C": "Temporary tables",
+            "D": "Databases",
+            "E": "Schemas"
+        },
+        "reference": null,
+        "category": "Storage",
+        "correct_answers": [
+            "B",
+            "C"
+        ],
+        "reason": "Temporary and Transient tables are designed for non-permanent data. Their Time Travel retention period is fixed at 0 or 1 day, and they do not have a Fail-safe period.",
+        "example": "A transient table created for ETL processing only allows 'UNDROP' or 'AT' queries for up to 24 hours."
+    },
+    {
+        "id": "39",
+        "question": "Which languages require that User-Defined Function (UDF) handlers be written inline? (Select TWO).",
+        "options": {
+            "A": "Java",
+            "B": "Javascript",
+            "C": "Scala",
+            "D": "Python",
+            "E": "SQL"
+        },
+        "reference": null,
+        "category": "Development",
+        "correct_answers": [
+            "B",
+            "E"
+        ],
+        "reason": "Javascript and SQL UDFs must have their logic defined 'inline' (within the CREATE statement). Languages like Java, Python, and Scala allow the code (handler) to be stored in a file on a stage.",
+        "example": "CREATE FUNCTION add(i int) RETURNS int AS 'return i + 1' LANGUAGE JAVASCRIPT; -- The code is inline."
+    },
+    {
+        "id": "40",
+        "question": "How do Snowflake data providers share data that resides in different databases?",
+        "options": {
+            "A": "External tables",
+            "B": "Secure views",
+            "C": "Materialized views",
+            "D": "User-Defined Functions (UDFs)"
+        },
+        "reference": null,
+        "category": "Data Sharing",
+        "correct_answers": [
+            "B"
+        ],
+        "reason": "To share data from multiple databases in a single share, providers create a Secure View that joins the tables from different databases. The share is then created on the database containing that view.",
+        "example": "CREATE SECURE VIEW consolidated_view AS SELECT * FROM db1.tbl1 JOIN db2.tbl2;"
+    }
+]
