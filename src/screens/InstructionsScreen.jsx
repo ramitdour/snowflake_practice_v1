@@ -4,11 +4,17 @@ import { useExam, PHASES } from '../context/ExamContext'
 const InstructionsScreen = () => {
     const { state, dispatch } = useExam();
 
-    const handleStart = () => dispatch({ type: 'START_EXAM' });
+    const isLoading = state.allQuestions.length === 0;
+
+    const handleStart = () => {
+        if (!isLoading) {
+            dispatch({ type: 'START_EXAM' });
+        }
+    };
 
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !isLoading) {
                 e.preventDefault();
                 handleStart();
             }
@@ -61,10 +67,20 @@ const InstructionsScreen = () => {
                     <div className="flex flex-col items-center pt-4 border-t border-pvue-primary/10">
                         <button 
                             onClick={handleStart}
-                            className="bg-pvue-primary text-white w-full py-4 rounded-lg text-[14pt] md:text-[18pt] font-black hover:bg-pvue-primary-dark transition-all shadow-lg active:scale-95 group uppercase tracking-[0.2em]"
+                            disabled={isLoading}
+                            className={`w-full py-4 rounded-lg text-[14pt] md:text-[18pt] font-black uppercase tracking-[0.2em] transition-all shadow-lg group ${
+                                isLoading 
+                                    ? 'bg-neutral-border text-neutral-muted cursor-not-allowed opacity-70' 
+                                    : 'bg-pvue-primary text-white hover:bg-pvue-primary-dark active:scale-95'
+                            }`}
                         >
-                            START SESSION ➔
+                            {isLoading ? 'LOADING DATA ENGINE...' : 'START SESSION ➔'}
                         </button>
+                        {isLoading && (
+                            <div className="text-[10pt] text-neutral-muted italic mt-4 animate-pulse">
+                                Fetching advanced exam bank. Please wait...
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

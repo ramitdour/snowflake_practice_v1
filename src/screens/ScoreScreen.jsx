@@ -48,7 +48,7 @@ const ScoreScreen = () => {
                     </button>
                     
                     <button 
-                        onClick={() => dispatch({ type: 'SHOW_END_EXAM_DIALOG', payload: true })}
+                        onClick={() => dispatch({ type: 'RESET_PORTAL' })}
                         className="text-neutral-muted hover:text-pvue-primary font-bold text-sm uppercase tracking-widest border-b-2 border-transparent hover:border-pvue-primary/20 pb-1 transition-all"
                     >
                         Return to Exam Home

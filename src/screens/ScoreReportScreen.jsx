@@ -368,7 +368,7 @@ const ScoreReportScreen = () => {
                     </div>
                     
                     <button 
-                         onClick={() => window.location.reload()}
+                         onClick={() => dispatch({ type: 'RESET_PORTAL' })}
                          className="bg-pvue-primary text-white border-2 border-transparent px-16 py-5 rounded-lg text-lg font-black hover:bg-white hover:text-pvue-primary hover:border-pvue-primary transition-all shadow-xl active:scale-95 group uppercase tracking-[0.3em] duration-500"
                     >
                          START NEW SESSION

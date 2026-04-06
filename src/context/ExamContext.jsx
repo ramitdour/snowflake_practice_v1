@@ -40,7 +40,11 @@ const getInitialState = () => {
     const saved = localStorage.getItem(SESSION_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
-      // We strip out allQuestions from storage, so it will start empty until loadQuestions runs
+      // If they somehow managed to save an active session with no questions, it's corrupted. Reset it.
+      if (parsed.phase && parsed.phase !== PHASES.LANDING && (!parsed.questions || parsed.questions.length === 0)) {
+         localStorage.removeItem(SESSION_KEY);
+         return initialState;
+      }
       return { ...initialState, ...parsed };
     }
   } catch (err) {
