@@ -191,9 +191,10 @@ export function ExamProvider({ children }) {
   // Load questions
   const loadQuestions = useCallback(async () => {
     try {
+      const baseUrl = import.meta.env.BASE_URL;
       const fileName = state.selectedBank === 'advanced' 
-        ? '/data/question_bank_with_markdown_data.json'
-        : '/data/snowflake_all_questions_with_answers.json';
+        ? `${baseUrl}data/question_bank_with_markdown_data.json`
+        : `${baseUrl}data/snowflake_all_questions_with_answers.json`;
         
       const response = await fetch(fileName);
       const data = await response.json();
