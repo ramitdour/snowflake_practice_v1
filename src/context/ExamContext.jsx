@@ -248,15 +248,46 @@ export function ExamProvider({ children }) {
   const loadQuestions = useCallback(async () => {
     try {
       const baseUrl = import.meta.env.DEV ? '/' : '/snowflake_practice_v1/';
-      const fileName = state.selectedBank === 'advanced' 
+      const isAdvanced = state.selectedBank === 'advanced';
+      const fileName = isAdvanced 
         ? `${baseUrl}data/question_bank_with_markdown_data.json`
         : `${baseUrl}data/snowflake_all_questions_with_answers.json`;
+
+      if (isAdvanced) {
+        console.log(`[ExamEngine] Initialization started. Attempting to fetch advanced question bank from: ${fileName}`);
+      }
         
-      const response = await fetch(fileName);
-      const data = await response.json();
-      dispatch({ type: 'SET_ALL_QUESTIONS', payload: data });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout limiter
+
+      try {
+        const response = await fetch(fileName, { signal: controller.signal });
+        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+        const data = await response.json();
+        clearTimeout(timeoutId);
+        
+        if (isAdvanced) {
+           console.log(`[ExamEngine] ✓ SUCCESS: Safely materialized ${data.length} advanced questions.`);
+        }
+        dispatch({ type: 'SET_ALL_QUESTIONS', payload: data });
+      } catch (fetchErr) {
+        clearTimeout(timeoutId);
+        if (isAdvanced) {
+           console.error(`[ExamEngine] ✕ CAUGHT TIMEOUT OR ERROR:`, fetchErr);
+           console.warn(`[ExamEngine] ⚠ TRIGGERING FAILSAFE FALLBACK. Pointing index to raw GitHub standard bank...`);
+           
+           const fallbackUrl = 'https://raw.githubusercontent.com/ramitdour/snowflake_practice_v1/refs/heads/main/public/data/snowflake_all_questions_with_answers.json';
+           const fallbackResponse = await fetch(fallbackUrl);
+           const fallbackData = await fallbackResponse.json();
+           
+           console.log(`[ExamEngine] ✓ SUCCESS: Fallback data safely materialized.`);
+           dispatch({ type: 'SET_ALL_QUESTIONS', payload: fallbackData });
+        } else {
+           throw fetchErr;
+        }
+      }
     } catch (err) {
-      console.error('Failed to load questions:', err);
+      console.error('Failed to load questions completely:', err);
     }
   }, [state.selectedBank]);
 

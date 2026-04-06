@@ -1,8 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useExam, PHASES } from '../context/ExamContext'
 
 const InstructionsScreen = () => {
     const { state, dispatch } = useExam();
+    const [timeLeft, setTimeLeft] = useState(60);
 
     const isLoading = state.allQuestions.length === 0;
 
@@ -11,6 +12,18 @@ const InstructionsScreen = () => {
             dispatch({ type: 'START_EXAM' });
         }
     };
+
+    useEffect(() => {
+        let timer;
+        if (isLoading && timeLeft > 0) {
+            timer = setInterval(() => {
+                setTimeLeft(prev => prev - 1);
+            }, 1000);
+        } else if (!isLoading) {
+            setTimeLeft(60);
+        }
+        return () => clearInterval(timer);
+    }, [isLoading, timeLeft]);
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -77,8 +90,9 @@ const InstructionsScreen = () => {
                             {isLoading ? 'LOADING DATA ENGINE...' : 'START SESSION ➔'}
                         </button>
                         {isLoading && (
-                            <div className="text-[10pt] text-neutral-muted italic mt-4 animate-pulse">
-                                Fetching advanced exam bank. Please wait...
+                            <div className="text-[10pt] text-neutral-muted italic mt-4 flex items-center justify-center gap-2">
+                                <span className="animate-spin text-xl">⏳</span>
+                                <span>Fetching secure exam payload. Timeout in {Math.max(0, timeLeft)}s...</span>
                             </div>
                         )}
                     </div>
