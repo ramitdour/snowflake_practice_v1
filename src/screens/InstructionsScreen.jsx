@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useExam, PHASES } from '../context/ExamContext'
 
 const InstructionsScreen = () => {
@@ -5,8 +6,19 @@ const InstructionsScreen = () => {
 
     const handleStart = () => dispatch({ type: 'START_EXAM' });
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleStart();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [dispatch]);
+
     return (
-        <div className="h-full bg-white flex flex-col items-center p-4 md:p-8 overflow-y-auto content-scrollbar select-none animate-in fadeIn duration-700">
+        <div className="h-full bg-white flex flex-col items-center p-4 md:p-8 overflow-y-auto content-scrollbar select-none animate-in fadeIn duration-700 outline-none">
             <div className="max-w-[850px] w-full bg-neutral-bg/10 rounded-xl shadow-inner border border-pvue-primary/10 overflow-hidden flex flex-col">
                 {/* Header Section */}
                 <div className="bg-pvue-primary p-6 md:p-10 text-white/90 space-y-3">

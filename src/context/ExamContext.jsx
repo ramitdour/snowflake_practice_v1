@@ -32,6 +32,23 @@ const initialState = {
   score: null,
 };
 
+const SESSION_KEY = 'snowflake_exam_session';
+const HISTORY_KEY = 'snowflake_exam_history';
+
+const getInitialState = () => {
+  try {
+    const saved = localStorage.getItem(SESSION_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // We strip out allQuestions from storage, so it will start empty until loadQuestions runs
+      return { ...initialState, ...parsed };
+    }
+  } catch (err) {
+    console.warn("Could not load session", err);
+  }
+  return initialState;
+};
+
 function examReducer(state, action) {
   switch (action.type) {
     case 'SET_ALL_QUESTIONS':
@@ -148,11 +165,28 @@ function examReducer(state, action) {
         const correctAns = (q.correct_answers || []).sort().join(',');
         if (userAns === correctAns) correct++;
       });
+
+      const scoreObj = { correct, total: questions.length };
+      
+      // Save exam history
+      try {
+        const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        history.push({
+          date: new Date().toISOString(),
+          candidateName: state.candidateName,
+          score: scoreObj,
+          bank: state.selectedBank
+        });
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      } catch (err) {
+        console.error("Failed saving history", err);
+      }
+
       return {
         ...state,
         phase: PHASES.SCORE,
         timerRunning: false,
-        score: { correct, total: questions.length },
+        score: scoreObj,
       };
     }
 
@@ -173,8 +207,16 @@ function examReducer(state, action) {
 }
 
 export function ExamProvider({ children }) {
-  const [state, dispatch] = useReducer(examReducer, initialState);
+  const [state, dispatch] = useReducer(examReducer, getInitialState());
   const timerRef = useRef(null);
+
+  // Save active session
+  useEffect(() => {
+    const { allQuestions, ...stateToSave } = state;
+    try {
+      localStorage.setItem(SESSION_KEY, JSON.stringify(stateToSave));
+    } catch (err) {}
+  }, [state]);
 
   // Timer effect
   useEffect(() => {

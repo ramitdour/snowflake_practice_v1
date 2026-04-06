@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useExam, PHASES } from '../context/ExamContext'
 
 const LandingScreen = () => {
@@ -6,6 +6,14 @@ const LandingScreen = () => {
     const [name, setName] = useState('');
     const [qCount, setQCount] = useState(40);
     const [bank, setBank] = useState('advanced');
+    const [history, setHistory] = useState([]);
+
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem('snowflake_exam_history');
+            if (saved) setHistory(JSON.parse(saved).reverse().slice(0, 5)); // Show last 5
+        } catch (err) {}
+    }, []);
 
     // Make Enter key globally submit the form
     const handleKeyDown = (e) => {
@@ -26,10 +34,12 @@ const LandingScreen = () => {
 
     return (
         <div 
-            className="h-full bg-neutral-bg flex items-center justify-center p-6 animate-in fade-in zoom-in duration-500 outline-none"
+            className="h-full bg-neutral-bg flex flex-col items-center p-6 lg:p-12 overflow-y-auto content-scrollbar animate-in fade-in duration-500 outline-none"
             onKeyDown={handleKeyDown}
+            tabIndex={0}
         >
-            <div className="bg-white p-12 rounded-xl shadow-2xl border border-pvue-primary/10 max-w-[550px] w-full text-center relative overflow-hidden group">
+            {/* Main Form Card */}
+            <div className="bg-white p-12 rounded-xl shadow-2xl border border-pvue-primary/10 max-w-[550px] w-full text-center relative overflow-hidden group mb-12 shrink-0">
                 <div className="absolute top-0 left-0 w-full h-2 bg-pvue-primary transition-all group-hover:h-3"></div>
                 
                 <div className="mb-10 flex flex-col items-center gap-4">
@@ -104,6 +114,43 @@ const LandingScreen = () => {
                     </div>
                 </form>
             </div>
+
+            {/* Past Exams History */}
+            {history.length > 0 && (
+                <div className="max-w-[800px] w-full animate-in slide-in-from-bottom-8 duration-700 pb-12 shrink-0">
+                    <h2 className="text-sm font-black text-pvue-primary uppercase tracking-widest mb-6 flex items-center gap-3">
+                        <span className="text-xl">📊</span> Recent Exam History
+                        <div className="h-px bg-pvue-primary/10 flex-grow"></div>
+                    </h2>
+                    
+                    <div className="grid md:grid-cols-2 gap-4 w-full">
+                        {history.map((record, i) => {
+                            const pct = ((record.score.correct / record.score.total) * 100).toFixed(0);
+                            const isPass = pct >= 75;
+                            const d = new Date(record.date);
+                            
+                            return (
+                                <div key={i} className="bg-white p-5 rounded-xl border border-black/5 shadow-sm flex items-center justify-between group hover:shadow-md transition-all">
+                                    <div className="space-y-1 text-left">
+                                        <div className="text-[10px] font-black uppercase text-neutral-400 tracking-widest">
+                                            {d.toLocaleDateString()} at {d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                        </div>
+                                        <div className="text-sm font-bold text-neutral-800">
+                                            {record.candidateName} • <span className="text-neutral-500 font-medium capitalize">{record.bank} Bank</span>
+                                        </div>
+                                    </div>
+                                    <div className={`flex flex-col items-end`}>
+                                        <div className={`text-xl font-black ${isPass ? 'text-emerald-600' : 'text-rose-600'}`}>{pct}%</div>
+                                        <div className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">
+                                            {record.score.correct} / {record.score.total} Correct
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
