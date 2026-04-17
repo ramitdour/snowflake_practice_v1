@@ -14,7 +14,7 @@ export const PHASES = {
 
 const initialState = {
   phase: PHASES.LANDING,
-  selectedBank: 'advanced', // 'standard' or 'advanced'
+  selectedBank: 'question_bank_with_markdown_data.json',
   allQuestions: [],   // Store all loaded questions
   questions: [],      // Store the subset of randomized questions
   questionCount: 40,  // Default count
@@ -284,14 +284,14 @@ export function ExamProvider({ children }) {
   // Load questions
   const loadQuestions = useCallback(async () => {
     try {
-      const isAdvanced = state.selectedBank === 'advanced';
-      const fileName = isAdvanced 
-        ? `${import.meta.env.BASE_URL}data/question_bank_with_markdown_data.json`
-        : `${import.meta.env.BASE_URL}data/snowflake_all_questions_with_answers.json`;
+      // Handle legacy saved state
+      let bankVal = state.selectedBank || 'question_bank_with_markdown_data.json';
+      if (bankVal === 'advanced') bankVal = 'question_bank_with_markdown_data.json';
+      if (bankVal === 'standard') bankVal = 'snowflake_all_questions_with_answers.json';
 
-      if (isAdvanced) {
-        console.log(`[ExamEngine] Initialization started. Attempting to fetch advanced question bank from: ${fileName}`);
-      }
+      const fileName = `${import.meta.env.BASE_URL}data/${bankVal}`;
+
+      console.log(`[ExamEngine] Initialization started. Attempting to fetch question bank from: ${fileName}`);
         
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout limiter
@@ -302,18 +302,12 @@ export function ExamProvider({ children }) {
         const data = await response.json();
         clearTimeout(timeoutId);
         
-        if (isAdvanced) {
-           console.log(`[ExamEngine] ✓ SUCCESS: Safely materialized ${data.length} advanced questions.`);
-        }
+        console.log(`[ExamEngine] ✓ SUCCESS: Safely materialized ${data.length} questions from ${bankVal}.`);
         dispatch({ type: 'SET_ALL_QUESTIONS', payload: data });
       } catch (fetchErr) {
         clearTimeout(timeoutId);
-        if (isAdvanced) {
-           console.error(`[ExamEngine] ✕ CAUGHT TIMEOUT OR ERROR:`, fetchErr);
-           await fetchFallback();
-        } else {
-           throw fetchErr;
-        }
+        console.error(`[ExamEngine] ✕ CAUGHT TIMEOUT OR ERROR:`, fetchErr);
+        await fetchFallback();
       }
     } catch (err) {
       console.error('Failed to load questions completely:', err);

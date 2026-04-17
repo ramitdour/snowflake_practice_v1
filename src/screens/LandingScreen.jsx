@@ -1,11 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useExam, PHASES } from '../context/ExamContext'
 
+const rawBanks = import.meta.glob('/public/data/*.json');
+const availableBanks = Object.keys(rawBanks).map(path => {
+    const filename = path.split('/').pop();
+    const name = filename.replace('.json', '').replace(/_/g, ' ').replace(/snowflake_all_questions_with_answers/, 'Standard Bank').replace(/question_bank_with_markdown_data/, 'Advanced Bank').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return { id: filename, name };
+});
+
 const LandingScreen = () => {
     const { dispatch } = useExam();
     const [name, setName] = useState('');
     const [qCount, setQCount] = useState(40);
-    const [bank, setBank] = useState('advanced');
+    const [bank, setBank] = useState(availableBanks.length > 0 ? availableBanks[0].id : 'question_bank_with_markdown_data.json');
     const [history, setHistory] = useState([]);
 
     useEffect(() => {
@@ -106,24 +113,17 @@ const LandingScreen = () => {
                         />
 
                         <div className="text-left font-bold text-pvue-primary-dark text-sm uppercase pt-2">Select Question Bank</div>
-                        <div className="grid grid-cols-2 gap-3 w-full">
-                            <button 
-                                type="button"
-                                onClick={() => setBank('standard')}
-                                className={`p-4 rounded-xl border-2 transition-all text-sm font-bold flex flex-col items-center gap-1 ${bank === 'standard' ? 'border-pvue-primary bg-pvue-primary/5 text-pvue-primary shadow-md' : 'border-neutral-border bg-transparent text-neutral-muted hover:border-neutral-text'}`}
-                            >
-                                <span className={bank === 'standard' ? 'text-lg' : 'text-lg opacity-50'}>📊</span>
-                                Standard Bank
-                            </button>
-                            <button 
-                                type="button"
-                                onClick={() => setBank('advanced')}
-                                className={`p-4 rounded-xl border-2 transition-all text-sm font-bold flex flex-col items-center gap-1 ${bank === 'advanced' ? 'border-pvue-primary bg-pvue-primary/5 text-pvue-primary shadow-md' : 'border-neutral-border bg-transparent text-neutral-muted hover:border-neutral-text'}`}
-                            >
-                                <span className={bank === 'advanced' ? 'text-lg' : 'text-lg opacity-50'}>🧠</span>
-                                Advanced Bank
-                            </button>
-                        </div>
+                        <select
+                            className="bg-neutral-bg/50 border-2 border-neutral-border p-3 rounded w-full text-left text-lg outline-none focus:border-pvue-primary focus:bg-white transition-all shadow-inner"
+                            value={bank}
+                            onChange={(e) => setBank(e.target.value)}
+                        >
+                            {availableBanks.map((b) => (
+                                <option key={b.id} value={b.id}>
+                                    {b.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     
                     <button 
@@ -176,7 +176,7 @@ const LandingScreen = () => {
                                             {!hasFullDetails && <span className="bg-neutral-200 text-neutral-500 px-1.5 rounded text-[8px] tracking-widest">LEGACY</span>}
                                         </div>
                                         <div className={`text-sm font-bold ${hasFullDetails ? 'text-neutral-800' : 'text-neutral-500'}`}>
-                                            {record.candidateName} • <span className={`${hasFullDetails ? 'text-neutral-500' : 'text-neutral-400'} font-medium capitalize`}>{record.bank} Bank</span>
+                                            {record.candidateName} • <span className={`${hasFullDetails ? 'text-neutral-500' : 'text-neutral-400'} font-medium capitalize`}>{record.bank.replace('.json', '').replace(/_/g, ' ')} Bank</span>
                                         </div>
                                     </div>
                                     <div className={`flex flex-col items-end relative z-10`}>
